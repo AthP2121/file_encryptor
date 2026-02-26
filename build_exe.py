@@ -17,7 +17,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 # PyInstaller arguments
 args = [
     os.path.join(script_dir, 'main.py'),
-    '--onefile',
+    '--onedir',
     '--windowed',
     '--name=FileEncryptor',
     f'--distpath={os.path.join(script_dir, "dist")}',

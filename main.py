@@ -7,9 +7,31 @@ from tkinter import ttk, filedialog, messagebox
 import os
 import threading
 from config import *
-from crypto_handler import CryptoHandler
-from file_manager import FileManager, BatchProcessor
 from ui_components import FileListFrame, PasswordEntryFrame, ProgressFrame, SearchFrame
+
+# Lazy-loaded modules (imported on-demand in methods to speed up startup)
+_crypto_handler = None
+_file_manager = None
+_batch_processor = None
+
+
+def _load_crypto():
+    """Lazy load CryptoHandler on first use."""
+    global _crypto_handler
+    if _crypto_handler is None:
+        from crypto_handler import CryptoHandler
+        _crypto_handler = CryptoHandler
+    return _crypto_handler
+
+
+def _load_file_manager():
+    """Lazy load FileManager and BatchProcessor on first use."""
+    global _file_manager, _batch_processor
+    if _file_manager is None:
+        from file_manager import FileManager, BatchProcessor
+        _file_manager = FileManager
+        _batch_processor = BatchProcessor
+    return _file_manager, _batch_processor
 
 
 class FileEncryptorApp:
@@ -26,6 +48,20 @@ class FileEncryptorApp:
         self.delete_originals_var = tk.BooleanVar(value=False)
 
         self.setup_ui()
+        
+        # Pre-load heavy modules after UI appears but before user interacts
+        # Schedule after 100ms to ensure UI is fully rendered
+        self.root.after(100, self._preload_modules)
+
+    def _preload_modules(self):
+        """Pre-load heavy modules in background after UI is ready."""
+        try:
+            # Load modules to cache them; this happens silently in background
+            _load_crypto()
+            _load_file_manager()
+        except Exception:
+            # Silent fail - modules will load on-demand if preload fails
+            pass
 
     def setup_ui(self):
         """Set up the user interface."""
@@ -168,6 +204,7 @@ class FileEncryptorApp:
     def do_search(self, directory, pattern, recursive, only_locked):
         """Execute file search."""
         try:
+            FileManager, _ = _load_file_manager()
             results = FileManager.search_files(
                 directory,
                 pattern=pattern,
@@ -194,6 +231,8 @@ class FileEncryptorApp:
 
         if filepath:
             try:
+                CryptoHandler = _load_crypto()
+                CryptoHandler.load_key_file(filepath)
                 self.key_file_path = filepath
                 self.keyfile_var.set(os.path.basename(filepath))
                 messagebox.showinfo('Success', 'Key file loaded successfully')
@@ -210,6 +249,7 @@ class FileEncryptorApp:
 
         if filepath:
             try:
+                CryptoHandler = _load_crypto()
                 CryptoHandler.generate_key_file(filepath)
                 self.key_file_path = filepath
                 self.keyfile_var.set(os.path.basename(filepath))
@@ -246,6 +286,7 @@ class FileEncryptorApp:
                 return None
 
             try:
+                CryptoHandler = _load_crypto()
                 key = CryptoHandler.load_key_file(self.key_file_path)
                 return {'mode': mode, 'password': None, 'key': key}
             except Exception as e:
@@ -276,6 +317,7 @@ class FileEncryptorApp:
         # Run encryption in thread
         def encrypt_thread():
             try:
+                _, BatchProcessor = _load_file_manager()
                 processor = BatchProcessor(progress_callback=self.update_progress)
                 results = processor.batch_encrypt(
                     selected,
@@ -325,6 +367,7 @@ class FileEncryptorApp:
         # Run decryption in thread
         def decrypt_thread():
             try:
+                _, BatchProcessor = _load_file_manager()
                 processor = BatchProcessor(progress_callback=self.update_progress)
                 results = processor.batch_decrypt(
                     selected,
