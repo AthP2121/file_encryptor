@@ -15,7 +15,8 @@ ENV/
 
 # PyInstaller
 dist/
-build/pyinstaller_temp/
+build/
+
 *.spec
 
 # Installer Output
@@ -42,3 +43,8 @@ htmlcov/
 *.bak
 *.log
 test_files/
+
+# Icons
+icon.ico
+icon.svg
+
