@@ -27,18 +27,20 @@ This guide shows you how to create a professional installer for File Encryptor, 
 ### Build the Installer
 
 ```batch
-REM Just run this batch file!
+REM Run from the project root directory!
 build_installer.bat
 ```
 
 This will:
-1. Build the portable .exe with PyInstaller
-2. Create the installer with Inno Setup
-3. Output both files
+1. Build the portable .exe with PyInstaller (creates `dist\FileEncryptor.exe`)
+2. Create the installer with Inno Setup (creates installer in `installer_output\`)
+3. PyInstaller temporary files go to `build\pyinstaller_temp\`
 
 **Results:**
 - Portable: `dist\FileEncryptor.exe` (~30-50 MB)
 - Installer: `installer_output\FileEncryptor_Setup_v1.0.0.exe` (~10-15 MB)
+
+**Important:** Always run build scripts from the project root directory.
 
 ---
 
@@ -53,13 +55,15 @@ This will:
 ### Step 2: Build the Executable
 
 ```powershell
-# In Windows Terminal
+# In Windows Terminal (from project root)
 cd %USERPROFILE%\file_encryptor
 venv\Scripts\Activate.ps1
 python build_exe.py
 ```
 
-**Output:** `dist\FileEncryptor.exe`
+**Output:**
+- Executable: `dist\FileEncryptor.exe`
+- Temporary build files: `build\pyinstaller_temp\` (auto-cleaned)
 
 ### Step 3: Customize the Installer Script (Optional)
 
@@ -74,15 +78,18 @@ Edit `installer_script.iss`:
 
 ### Step 4: Compile the Installer
 
+**Important:** Make sure you're in the project root directory before compiling!
+
 **Option A - GUI:**
 1. Open Inno Setup Compiler
-2. File → Open: `installer_script.iss`
+2. File → Open: `installer_script.iss` (in project root)
 3. Build → Compile
 4. Wait ~30 seconds
 5. Done!
 
 **Option B - Command Line:**
 ```cmd
+REM From project root directory
 "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer_script.iss
 ```
 
@@ -319,9 +326,10 @@ DefaultDirName={commonpf}\{#MyAppName}
 **Problem:** Installer script can't find the executable
 
 **Solution:**
-1. Make sure you built the .exe first: `python build_exe.py`
-2. Check that `dist\FileEncryptor.exe` exists
-3. Verify path in `installer_script.iss` matches
+1. Make sure you're running from the project root directory
+2. Build the .exe first: `python build_exe.py`
+3. Check that `dist\FileEncryptor.exe` exists
+4. Verify paths in `installer_script.iss` are correct (uses relative paths from root)
 
 ### "Cannot open icon file"
 

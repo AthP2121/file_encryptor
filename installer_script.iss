@@ -1,5 +1,8 @@
 ; Inno Setup Script for File Encryptor
 ; Creates a professional Windows installer
+;
+; IMPORTANT: This script must be compiled from the project root directory
+; All file paths are relative to the project root
 
 #define MyAppName "File Encryptor"
 #define MyAppVersion "1.0.0"
@@ -40,7 +43,7 @@ DisableProgramGroupPage=yes
 
 ; License and info
 LicenseFile=LICENSE.txt
-InfoBeforeFile=README.txt
+InfoBeforeFile=docs\README.txt
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -55,7 +58,7 @@ Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Documentation
 Source: "README.md"; DestDir: "{app}"; Flags: ignoreversion
-Source: "QUICKSTART.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "docs\QUICKSTART.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]

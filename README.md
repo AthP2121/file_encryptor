@@ -31,11 +31,31 @@ python main.py
 
 To create a standalone Windows executable:
 
+**Option 1: Using build script (recommended):**
+```bash
+# From project root directory
+python build_exe.py
+```
+
+**Option 2: Using PyInstaller directly:**
 ```bash
 pyinstaller --onefile --windowed --name="FileEncryptor" main.py
 ```
 
-The executable will be in the `dist` folder.
+The executable will be in the `dist/` folder.
+
+**Creating a Windows Installer:**
+
+See `docs/CREATE_INSTALLER.md` for detailed instructions on creating a professional installer with Inno Setup.
+
+```bash
+# Quick installer build (requires Inno Setup)
+build_installer.bat
+```
+
+This creates:
+- `dist/FileEncryptor.exe` - Portable executable (~30-50 MB)
+- `installer_output/FileEncryptor_Setup_v1.0.0.exe` - Professional installer (~10-15 MB)
 
 ## Usage
 
@@ -195,14 +215,36 @@ This allows the application to:
 
 ```
 file_encryptor/
-├── main.py              # Main application entry point and GUI
-├── crypto_handler.py    # Encryption/decryption logic
-├── file_manager.py      # File operations and batch processing
-├── ui_components.py     # Reusable UI widgets
-├── config.py            # Configuration constants
-├── requirements.txt     # Python dependencies
-└── README.md           # This file
+├── main.py                 # Main application entry point and GUI
+├── crypto_handler.py       # Encryption/decryption logic
+├── file_manager.py         # File operations and batch processing
+├── ui_components.py        # Reusable UI widgets
+├── config.py               # Configuration constants
+├── requirements.txt        # Python dependencies
+├── build_exe.py            # Build script for creating executable
+├── build_installer.bat     # Windows installer build script
+├── installer_script.iss    # Inno Setup installer configuration
+├── CLAUDE.md               # AI development guide
+├── README.md               # This file
+├── build/                  # Build artifacts (gitignored)
+│   └── pyinstaller_temp/   # PyInstaller temporary files
+├── dist/                   # Build output (gitignored)
+│   └── FileEncryptor.exe   # Portable executable
+├── installer_output/       # Installer output (gitignored)
+│   └── FileEncryptor_Setup_v1.0.0.exe
+└── docs/                   # Documentation
+    ├── CREATE_INSTALLER.md # Installer creation guide
+    ├── PROJECT_SUMMARY.md  # Complete project overview
+    ├── QUICKSTART.md       # Getting started guide
+    └── WINDOWS_INSTALL.md  # Windows installation guide
 ```
+
+**Build Directories:**
+- `build/` - Temporary PyInstaller build files (auto-cleaned, gitignored)
+- `dist/` - Output directory for executables (gitignored)
+- `installer_output/` - Output directory for installers (gitignored)
+
+**Important:** Always run build scripts from the project root directory.
 
 ### Running Tests
 
